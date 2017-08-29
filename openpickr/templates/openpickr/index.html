@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <title>openpickr</title>
+    <style>
+
+
+div.gallery {
+
+    margin: 5px;
+    border: 1px solid #ccc;
+    float: left;
+    width: 180px;
+}
+
+div.gallery:hover {
+    border: 1px solid #777;
+}
+
+div.gallery img {
+    width: 100%;
+    height: auto;
+}
+
+div.desc {
+    padding: 15px;
+    text-align: center;
+}
+</style>
+
+</head>
+<body>
+{% load imagekit %}
+<script>
+      function change(){
+      document.getElementById("is_like").value= True;
+      document.getElementById("myform").submit();
+      }
+
+   </script>
+<div>
+<h2 style="display:inline-block">{{ user }}'s gallery </h2>
+    <a href="{% url 'logmeout' %}" style="display:inline-block"><button type="button" >logout</button></a>
+    <a href="{% url 'addimage' %}" style="display:inline-block"><button type="button" >Add Image</button></a>
+</div>
+{% if albums %}
+
+{% for album in albums %}
+    <div class="gallery">
+
+            <img class="img" src="{{ album.image_thumbnail.url }}" >
+    <div class="desc">{{ album.name }}</div>
+    <div class="desc">{{ album.comment }}</div>
+    <div class="desc">{{ album.date }}</div>
+        <div class="desc">
+            <iframe name="votar" style="display:none"></iframe>
+            <form action="" method="post" id="myform" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="text" id="name" name="name" value="{{ album.name }}" style="display:none">
+                <input type="checkbox" name="is_like" id="is_like" style="display:none" value="false">
+                <button type="submit" onclick="change()">Like</button>
+            </form>
+         {{ album.likes }}
+         {{ album.like.count }}
+
+            <form id="deleteform" action="{% url 'delete' album.id%}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="name" value="{{ album.name }}" />
+                <button type="submit">Delete</button>
+            </form>
+        </div>
+</div>
+{% endfor %}
+{% else %}
+<h2>nothing to display</h2>
+{% endif %}
+
+</body>
+</html>
